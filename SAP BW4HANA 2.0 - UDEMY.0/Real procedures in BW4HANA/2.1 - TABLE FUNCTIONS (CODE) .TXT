@@ -10,9 +10,20 @@ Table function is usually used for scenarios which Temporal Join in Dimension CV
     - On returns propertie of proposed logic change it to an acurated return table type as you needed. Eg: 
 
             ** **
-            FUNCTION "HANAUSER". "ZTEST DAOU.TF::2TF_ PLANT_ ADDR" ( )
-            RETURNS TABLE (
-            
+         FUNCTION "HANAUSER"."ZTEST_DAOU.TF::ZTF_PLANT_ADDR" ( ) 
+            RETURNS return_table_type
+            LANGUAGE SQLSCRIPT
+            SQL SECURITY INVOKER AS
+        BEGIN
+        /***************************** 
+            Write your function logic
+        *****************************/
+        END;
+
+    - Implement your desired logic within BEGIN END statement.
+
+            FUNCTION "HANAUSER"."ZTEST_DAOU.TF::ZTF_PLANT_ADDR" ( ) 
+            RETURNS  TABLE (
 
                 MANDT NVARCHAR(3),
                 WERKS NVARCHAR(4),
@@ -23,26 +34,7 @@ Table function is usually used for scenarios which Temporal Join in Dimension CV
                 ADRNR_DESC NVARCHAR(30),
             )
             LANGUAGE SQLSCRIPT
-            SQL SECURITY INVOCKER AS
-            BEGIN
-           
-            END;
-
-    - Implement your desired logic within BEGIN END code.
-
-            FUNCTION "HANAUSER". "ZTEST DAOU.TF::2TF_ PLANT_ ADDR" ( )
-            RETURNS TABLE (
-
-                MANDT NVARCHAR(3),
-                WERKS NVARCHAR(4),
-                PLANT_DESC NVARCHAR(30),
-                ADRNR NVARCHAR(10),
-                DATE_FROM NVARCHAR(8),
-                DATE_TO NVARCHAR(8),
-                ADRNR_DESC NVARCHAR(30),
-            )
-            LANGUAGE SQLSCRIPT
-            SQL SECURITY INVOCKER AS
+            SQL SECURITY INVOKER AS
             BEGIN
            
                 LT_RETURN = 
@@ -65,6 +57,8 @@ Table function is usually used for scenarios which Temporal Join in Dimension CV
             RETURN :LT_RETURN;
 
             END;
-    - 
+
+    - Save and Activate .
+
 
         NOTE: I YOU WANT CHECK DATA TYPE FOR A PARTICULAR TABLE OF YOUT SCHEMA, GO TO SYS schema  > views > VIEW_COLUMNS , search by VIEW_NAME = <Repository Package>.<Repository Package>.<CV NAME>.
