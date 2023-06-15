@@ -12,6 +12,7 @@ Table function is usually used for scenarios which Temporal Join in Dimension CV
             ** **
             FUNCTION "HANAUSER". "ZTEST DAOU.TF::2TF_ PLANT_ ADDR" ( )
             RETURNS TABLE (
+            
 
                 MANDT NVARCHAR(3),
                 WERKS NVARCHAR(4),
