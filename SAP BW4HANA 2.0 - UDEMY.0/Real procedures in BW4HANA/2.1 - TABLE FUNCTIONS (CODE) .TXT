@@ -1,4 +1,4 @@
-Table function is usually used for scenarios which Temporal Join in Dimension CVs or Access Row tables are required. 
+Table function is usually used for scenarios which Temporal Join in Dimension CVs , Access Row , Looping tables are required. 
 
 1 - CREATE A TABLE FUNCTION 
 
@@ -20,9 +20,9 @@ Table function is usually used for scenarios which Temporal Join in Dimension CV
         *****************************/
         END;
 
-    - Implement your desired logic within BEGIN END statement.
+    - Implement your desired logic within BEGIN END statement,Also change the schema to _sys_bic to allow consistency in mantaining journal.
 
-            FUNCTION "HANAUSER"."ZTEST_DAOU.TF::ZTF_PLANT_ADDR" ( ) 
+            FUNCTION "_SYS_BIC"."ZTEST_DAOU.TF::ZTF_PLANT_ADDR" ( ) 
             RETURNS  TABLE (
 
                 MANDT NVARCHAR(3),
@@ -60,13 +60,32 @@ Table function is usually used for scenarios which Temporal Join in Dimension CV
 
     - Save and Activate .
 
-2 - CREATE A CALCULATION VIEW and 
+    - Test if the function is correctly working executing SQL statement. (DON'T FORGET ADD THE BRAKETS AT THE END OF FUNCTION NAME).
+
+       Eg:  select * from "HANAUSER"."ZTEST_DAOU.TF::ZTF_PLANT_ADDR" ( )
+
+2 - CREATE A CALCULATION VIEW
     
     - In Calculation view designer add the Table Function into a new projection  element in order to have a Calculation view representation of Table Function. 
 
+3 - PASSING VALUES TO FUNCTION FROM CALCULATION VIEW: 
 
+    - Create a input parameter in Calculation view designer.
 
+    - Define in your table function you are expecting values in function argument, providing a custom name for that variable and data type inside the function brakets.
 
+     eg: FUNCTION "_SYS_BIC"."ZTEST_DAOU.TF::ZTF_PLANT_ADDR" ( IN_USER_DATE  nvarchar(10) ) 
+
+    note: Inputs format for date will be in dd/mm/yyyy format and needs to be converted inside th function logic before doing the query. 
+
+     eg: declare lv_date nvarchar(8) := to_dats(:IN_USER_DATE);
+
+    - From calculation view your must mapping input parameter to function input value. 
+
+        - Go to Parameter/variable tabe, go to "Input parameter manage mapping" icon.
+        - Since Table Function probably is you data source selecte that option, A Suggested mapping to youf tabla function will display. 
+        - Connect each other both variables representation. 
+        - Save and Activate .
 
 
 NOTE: I YOU WANT CHECK DATA TYPE FOR A PARTICULAR TABLE OF YOUT SCHEMA, GO TO SYS schema  > views > VIEW_COLUMNS , search by VIEW_NAME = <Repository Package>.<Repository Package>.<CV NAME>.
