@@ -1,0 +1,65 @@
+1 - CREATE A NON-STRUCTURAL PACKAGE IN WHICH CALCULATION VIEW IS GOING TO BE CREATED
+
+    - Go to repository window, right click New > Repository Package 
+    
+    - Create previuos repository package created follow same process to create a subpackage and named it as you want (EG CALC_VIEW). 
+      <MAIN REPO PACKAGE>.<CHILD PACKAGE>  
+
+ 2 - CREATE CALCULATION VIEW
+    
+      - Right click over child package and create a calculation view. 
+
+        - provide a name following naming conventions eg: ZCV_<BUSSINESS MODEL NAME>_DIM
+        - Subtype : Standard. 
+        - Calculation view Types : select Graphical, SQL Script is obsolet. 
+        - Data category : depends of the purpose os the object. Eg. DIMENSION (could be expose for Analisys for office, leaving it on blank NOT)
+        
+    - Go to CV View properties tab on details seccion: 
+
+        - Set Default cliente as "Cross Session". (Best practice) 
+        - Apply Privileges : Classical Analitic Privileges
+    
+    - Go to designer: 
+
+      - Create a new Projection node. (Best Practice). Allows you to have a Filters Expresion. 
+      - Drag and Drop from data remote source tree the element you want to add. (Staging Table)
+      - Select from the fields list just the needed ones. 
+      - Connect the Projection you create to the existing one (top projection).
+      - Select all fields from projection you created by clicking right selecting Add to Output or Select your projection,
+        go to Ouput Window > Column select all fields , then right click over them and select Propagate to Semantics.
+
+      - If input parameters are needed: 
+        - Go to Parameter/Variables Tab an selecct green plus icon > select Create input parameter or Variable. 
+        - Parameter type : 
+            Direct : Write directly without any help.
+            Column : (provide help to select input value).
+            Derived from table: 
+            Static list : Chose estricted options to be selected.
+            Derived from Procedure/Scalar function.
+
+            * If column option is choosen select the sources table to be the staging table. (BEST PRACTICE).
+
+        - Then go to projection > outpu window > Filter folder > Expression.
+            
+            - Select from Columns folder the field you want to restrict and from Input parameter choose the input created priviuosly. 
+        
+    - Active the calculation view object.   
+
+      NOTE: In order to avoid any authorization issue, ensure that _sys_repo user has granted to your remote source schema. 
+
+        sql statement to grant _sys_repo user: 
+
+          GRANT SELECT ON SCHEMA <SCHEMA NAME> TO <USER NAME> WITH GRANT OPTION. 
+
+    - If Join or Union with 2 or more table is needed: 
+
+      - Add Join/Union element in between top projection and joinable table projection desired. 
+      - Link source table projection to target join element. 
+      - Select Join element and perform join type (inner, left, right ...) and  conditions. (Rght click New Join), 
+        choose Cardinality if you know what cardinality you need, if not, HANA will provide by default. 
+      - (IN CASE YOU ARE HANDLELING JOIN BETWEEN TEXT TABLE)If you need language is selected automactly based on your login user preference,
+       select Text join and select Language column of table you are joining with. Act as LEFT OUTER JOIN. 
+
+    Note:  Language selection also could be achieved using standard system variables : $$CLIENT$$ , $$LANGUAGE$$ ...
+
+    

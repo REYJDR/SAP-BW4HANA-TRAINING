@@ -1,0 +1,33 @@
+1 - CREATE A REMOTE DATA SOURCE 
+
+    On BW4HANA DB 
+    - Go to Provicioning > Reomote Sources > right click and select New Remote Source.
+    - Provide required inputs: 
+        - source name
+        -Adapter name : for S4HANA DB use HANA ODBC.
+        - Source location : indexserver
+        - fill up conection properties (Server, port, DML Mode (readwrite option is recomemded)
+        - fill up Credentials (User privilieges should hace unrestricted access to remote source tables)
+
+2 - CREATE VIRTUAL TABLE. 
+
+    - Go to  Catalog , right click and selecte Open SQL Console. 
+    - Write the statement to create a new schema (give a proper name): 
+        
+        CREATE SCHEMA "<SCHEMA NAME>"
+
+    - Under schema created previuosly create a virtual table pointing to remote table you want access to. 
+
+        CREATE VIRTUAL TABLE  "<SCHEMA NAME>.<VIRTUAL TABLE NAME>" AT 
+        "<SOURCE NAME>.<SOURCE DB>.<SOURCE SCHEMA>.<TABLE NAME>"
+         
+    Virtual table if was successfuly created will be able unter Table Folder of created schema.
+    DROP VIRTUAL TABLE WILL BE NEED IS THERE ARE ANY STRUCTURE TABLE CHANGES ON REMOTE SOURCE. 
+
+3 - CREATE STAGING TABLE.
+
+    - Create a persistent table you have 2 option either create a row table or column table (80 or 90% of time it is a column table). 
+
+        CREATE VIRTUAL TABLE  "<SCHEMA NAME>.<STAGING TABLE NAME>" AS 
+        "<SCHEMA NAME>.<VIRTUAL TABLE NAME>"
+

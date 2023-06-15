@@ -1,0 +1,69 @@
+Table function is usually used for scenarios which Temporal Join in Dimension CVs or Access Row tables are required. 
+
+1 - CREATE A TABLE FUNCTION 
+
+    - Go to your repository and create a Repository Package for Table Functions.
+    - Click right over previuos Package created y select New > look for Table Funcion into SAP Hana tree.
+    - Give a proper name for you Table Function attending the naming convensions, eg: ZTF_<BUSSINESS TABLE MODEL>, 
+      click OK and A code editor will be opened.
+
+    - On returns propertie of proposed logic change it to an acurated return table type as you needed. Eg: 
+
+            ** **
+            FUNCTION "HANAUSER". "ZTEST DAOU.TF::2TF_ PLANT_ ADDR" ( )
+            RETURNS TABLE (
+
+                MANDT NVARCHAR(3),
+                WERKS NVARCHAR(4),
+                PLANT_DESC NVARCHAR(30),
+                ADRNR NVARCHAR(10),
+                DATE_FROM NVARCHAR(8),
+                DATE_TO NVARCHAR(8),
+                ADRNR_DESC NVARCHAR(30),
+            )
+            LANGUAGE SQLSCRIPT
+            SQL SECURITY INVOCKER AS
+            BEGIN
+           
+            END;
+
+    - Implement your desired logic within BEGIN END code.
+
+            FUNCTION "HANAUSER". "ZTEST DAOU.TF::2TF_ PLANT_ ADDR" ( )
+            RETURNS TABLE (
+
+                MANDT NVARCHAR(3),
+                WERKS NVARCHAR(4),
+                PLANT_DESC NVARCHAR(30),
+                ADRNR NVARCHAR(10),
+                DATE_FROM NVARCHAR(8),
+                DATE_TO NVARCHAR(8),
+                ADRNR_DESC NVARCHAR(30),
+            )
+            LANGUAGE SQLSCRIPT
+            SQL SECURITY INVOCKER AS
+            BEGIN
+           
+                LT_RETURN = 
+                SELECT 
+                A.MANDT,
+                A.WERKS,
+                A.NAME1 AS PLANT_DESC,
+                A.ADRNR,
+                B.DATE_FROM,
+                B.DATE_TO,
+                B.NAME1 AS ADRNR_DESC
+                FROM 
+
+                DEBANSHU_SDA_BT2.STA_T001W A 
+                LEFT OUTER JOIN  DEBANSHU_SDA_BT2.STA_ADRC B 
+                ON A.MANDT = B.CLIENT 
+                AND A.ADRNR = B.ADDRNUMBER
+                AND CURRENT_DATE BETWEEN B.DATE_FROM AND B.DATE_TO;
+
+            RETURN :LT_RETURN;
+
+            END;
+    - 
+
+        NOTE: I YOU WANT CHECK DATA TYPE FOR A PARTICULAR TABLE OF YOUT SCHEMA, GO TO SYS schema  > views > VIEW_COLUMNS , search by VIEW_NAME = <Repository Package>.<Repository Package>.<CV NAME>.
