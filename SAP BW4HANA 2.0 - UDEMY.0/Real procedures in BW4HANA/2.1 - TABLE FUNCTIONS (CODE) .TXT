@@ -60,5 +60,14 @@ Table function is usually used for scenarios which Temporal Join in Dimension CV
 
     - Save and Activate .
 
+2 - CREATE A CALCULATION VIEW and 
+    
+    - In Calculation view designer add the Table Function into a new projection  element in order to have a Calculation view representation of Table Function. 
 
-        NOTE: I YOU WANT CHECK DATA TYPE FOR A PARTICULAR TABLE OF YOUT SCHEMA, GO TO SYS schema  > views > VIEW_COLUMNS , search by VIEW_NAME = <Repository Package>.<Repository Package>.<CV NAME>.
+
+
+
+
+
+NOTE: I YOU WANT CHECK DATA TYPE FOR A PARTICULAR TABLE OF YOUT SCHEMA, GO TO SYS schema  > views > VIEW_COLUMNS , search by VIEW_NAME = <Repository Package>.<Repository Package>.<CV NAME>.
+
