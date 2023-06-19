@@ -1,0 +1,22 @@
+Calculation view with data category CUBE  is created same as a Dimension one. The diferent between is the cube type is made for Measurments purpuse, 
+and a measure data type for a field must be assigned. 
+
+1 - CREATE A CALCULATION VEW AS CUDE CATEGORY.
+
+    - Create a CV as usually do but select category type CUBE. 
+    - In designer a Aggregation node is created by default. That's means that any projectcion related to this node must has an field of measure selected.
+    - be sure to define to that measure field selected 
+        - go to semantics top node , Columns tap , select the field and assign from the type dropdown list the Measure option. 
+
+    - If the measure fields is related or depends of unit fiels and you want to show both together ,  so we need to do this relation: 
+
+        In agregation node or semantic node: 
+        - in output window select the field that represent Unit. 
+        - go to its properties > Semantic type : select "Unit of Measure". 
+        - Do the same for measure fiels and select "Quantity with unit of measure".
+        - Open Unit window ant selest Column type , then select the unit column you want relate with. 
+        - If you want to add convertion functionality between units of measure: you can do it by selecting convertion check box. For that you will need a 
+    table convertions in a particular schema with conversion factor created And the you could select it providing Source unit and Target unit based on that factor table. 
+
+
+
