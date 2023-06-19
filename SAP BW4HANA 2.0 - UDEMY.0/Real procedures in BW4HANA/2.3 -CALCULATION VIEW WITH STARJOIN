@@ -1,0 +1,7 @@
+Allow to add all joins in one place on calculation view. 
+
+1 - CALCULATION VIEW WITH STAR JOIN
+
+    - Create a CV as usual, but click on Star Join checkbox. 
+    - This will creat a espacial element in CV Designer called StarJoin.
+    - You can only add dimension CV to a star join, no a table directly. 
