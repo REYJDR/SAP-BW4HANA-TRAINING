@@ -24,43 +24,6 @@ For data loading on SAP HANA.
 
     eg:  call "_SYS_BIC"."ZTEST_DAOU.SP::ZSP_S4H_TABLE_MATERIALIZATION" ( ) 
 
-4 - CREATE A XS JOBS : IF YOU WANT TO SCHEDULE THE EXECUTION OF A STORED PROCEDURE. 
-
-    - create a repository package specific to add XS JOBS. 
-    - Right click and g to New > search for XS job Scheduler File.
-    - A text editor will open and type the below json estructure: 
-
-        {
-            "description": "Name of your Job",
-            "action": "ZTEST_DAOU.SP::ZSP_S4H_TABLE_MATERIALIZATION" <"Name of your DB Procedure">
-             "schedules" :[ 
-                {
-
-                    "description" : " Daily @ 10pm EST | only on Monday to Wednesdeay",
-                    "xcron" : "* * * mon:wed 22 0 0", <(Y M D DayofWeek Hour Min Sec)> time is based on UTC. 
-                    "parameter" : {
-                        "stock": "SAP.DE" <in case your procedure are expecting input parameters>
-                    }
-                },
-
-                {
-                    "description" : " Hourly BT 5 and 11pm EST | only on Thursday   to  sdun ",
-                    "xcron" : "* * * thu:sun 17:23 0 0", <EVERY HOUR BETWEEN 17 AND 23> 
-                
-            }
-            ]
-
-        }
-        save an activate.
-    - Final step is to activate the job schedule on hana cokpit.
-
-    
-
-
-
-
-
-
 
 NOTE: "READS SQL DATA" MEANS THAT SOTRED PROCEDURE CAN ONLY EXECUTE READING STATEMENS, OTHERWIVE YOU NEED TO REMOVE THIS CODE LINE. 
 Create virtual tables are not allowed from stored procedure. 
