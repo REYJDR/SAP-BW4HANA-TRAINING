@@ -1,0 +1,82 @@
+IT IS A GRAPHICAL TOOL TO TRANSFORM DATA AT HANA LEVEL, and can be user for SCDs . (LOOK AND FEELS LIKE BODS). 
+
+
+1 - CREATE A TARGET TABLE
+- To handler SCD (slowly changes dimension) flow we'll need to create a target table with below fields as mandatory,
+ that helps to identify the changes: 
+
+    eg: 
+        DROP TABLE DEBANSHU_SDA_BT2.ZSCD_TGT;
+        create column table DEBANSHU_SDA_BT2.ZSCD_TGT
+        (
+            SURR_ID INTEGER, -- SOURCED VIA A SEQUENCE(needed)
+            DOC_NO NVARCHAR(10), (same as source table)
+            MATERIAL NVARCHAR(40), (same as source table)
+            MAT_DESC NVARCHAR(100), (same as source table)
+            VALID_FROM NVARCHAR(10), (needed)
+            VALID_TO NVARCHAR(10),(needed)
+            CURRENT_FLAG NVARCHAR(1),(needed)
+            primary key (SURR_ID)
+        );
+
+2 -  CREATE SEQUENCE
+
+    - create a repository package specific to add SEQUENCE DEFINITION object. 
+    - Right click and gO to New > search for sequence definition. Give a name related to target table KEY field and select template Basic.
+
+        eg:  ZSEQ_SURR_ID
+    - Change min, max , increment , etc values accordently, and provide the schema name in which the target table is created. 
+    - Go to hana perspective > get into schema tree > and look for Sequence folder, be sure your sequence definition is created and added into that folder. (Refresh if needed)
+
+
+    ZTEST_DAOU.SEQ::ZSEQ_SURR_ID
+3 - CREATE A FLOWGRAPH 
+
+    - create a repository package specific to add Flowgraph MODEL object. 
+    - Right click and go to New > search for Flowgraph Model.
+        EG: NAME ZFG_SCD_MATERIA.
+
+    - Choose between Stored Procedure or Task Plan.
+
+        -Task Plan gives a realtime replication, Stored procedure dosen't.
+        -Stored procedure hasn´t available the whole transformation tool. 
+        -Task plant provide data provisioning palette library. 
+
+        for training purpose Task Plan is selected. 
+
+        - click on Ok and a Flowgrphs canvas will be opened. 
+
+4 - MODELING FLOWGRAPH
+
+    - From palette options tools drag and drop Data Source and select the source table. 
+    - then drag and drop Table Comparision tool. And connect it with Data Source element.
+  
+        - Right click on Table comparision and select properties > general : 
+            - Comparison table = target table.
+            - Generated key attribute = Key FIELD.
+            - Filter condition = "CURRENT_FLAG"="Y" <IN RODER TO ONLY COMPARE WITH LASTET CHANGE RECORD WE NEED TO SET A FILTER TO NO CONSIDER HISTORICAL VALUES>
+            - Compare attribute = select all or just a few <WHICH COLUM I WANT TO COMPARE> Set at least one column as primary KEY.
+            - go to properties > mapping, you can defined a custom mapping between source an target tables , if you leave it as is then system will map it automaticly.
+   - then drag and drop History tool. And connect it with Table Comparision element.
+
+        - Right click on History  and select properties > general : 
+            - Date attribute > valid from = select target table valid_from field .
+            - Date attribute > valid to = select target table valid_to field .
+            - Valid date to value > New Record = EG: 9999-12-31 <which value should consider to valid_to field  for new records>
+            Valid date to value > Old record  <which value should consider to valid_from field  for old records>.
+            - Current flag > attribute = select CURRENT_FLAG field. 
+            - Current flag > set value = Y
+            - Current flag > Reset value = N
+            - Check Update attribute on Deletion if you are handleing Deletion comparison.
+
+  - then drag and drop Data sink tool selecting target table And connect it with History element.
+
+        - Right click on Data sink   and select properties > general : 
+            - Key generation attribute = select target table key. 
+            - Sequence Schema = privide sequence schema name eg:   DEBANSHU_SDA_BT2
+            - Sequence name = privide sequence name eg:    ZTEST_DAOU.SEQ::ZSEQ_SURR_ID
+
+   - Go to Flowgrphs propertY and asign Target schema in which Flowgraph will be created.
+
+   -TO RUN THE Flowgraphcliking the green icon selecting "Execute in SQL Editor"
+   
