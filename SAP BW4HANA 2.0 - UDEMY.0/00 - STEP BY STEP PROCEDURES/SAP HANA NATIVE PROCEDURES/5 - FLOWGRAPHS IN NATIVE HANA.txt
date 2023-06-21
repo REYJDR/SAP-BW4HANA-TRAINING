@@ -49,6 +49,7 @@ IT IS A GRAPHICAL TOOL TO TRANSFORM DATA AT HANA LEVEL, and can be user for SCDs
 4 - MODELING FLOWGRAPH
 
     - From palette options tools drag and drop Data Source and select the source table. 
+        IF SOURCE IS SDA (realtime replication, need separated licence) YOU NEED TO CREATE A VIRTUAL TABLE. 
     - then drag and drop Table Comparision tool. And connect it with Data Source element.
   
         - Right click on Table comparision and select properties > general : 
@@ -57,6 +58,7 @@ IT IS A GRAPHICAL TOOL TO TRANSFORM DATA AT HANA LEVEL, and can be user for SCDs
             - Filter condition = "CURRENT_FLAG"="Y" <IN RODER TO ONLY COMPARE WITH LASTET CHANGE RECORD WE NEED TO SET A FILTER TO NO CONSIDER HISTORICAL VALUES>
             - Compare attribute = select all or just a few <WHICH COLUM I WANT TO COMPARE> Set at least one column as primary KEY.
             - go to properties > mapping, you can defined a custom mapping between source an target tables , if you leave it as is then system will map it automaticly.
+
    - then drag and drop History tool. And connect it with Table Comparision element.
 
         - Right click on History  and select properties > general : 
@@ -78,5 +80,4 @@ IT IS A GRAPHICAL TOOL TO TRANSFORM DATA AT HANA LEVEL, and can be user for SCDs
 
    - Go to Flowgrphs propertY and asign Target schema in which Flowgraph will be created.
 
-   -TO RUN THE Flowgraphcliking the green icon selecting "Execute in SQL Editor"
-   
+   - TO RUN THE Flowgraphcliking the green icon selecting "Execute in SQL Editor"
