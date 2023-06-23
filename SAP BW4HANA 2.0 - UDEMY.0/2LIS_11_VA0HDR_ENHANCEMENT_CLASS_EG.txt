@@ -1,0 +1,83 @@
+ZCL_IM_RSU5_2LIS_11_VAHDR
+
+class ZCL_IM_RSU5_2LIS_11_VAHDR definition
+  public
+  final
+  create public .
+
+public section.
+
+  interfaces IF_EX_RSU5_SAPI_BADI .
+  METHODS:
+   VA0HDR_TRANSFORM
+     IMPORTING IT_T_DATA TYPE  ANY TABLE.
+
+protected section.
+private section.
+ENDCLASS.
+
+
+
+CLASS ZCL_IM_RSU5_2LIS_11_VAHDR IMPLEMENTATION.
+
+
+  method IF_EX_RSU5_SAPI_BADI~DATA_TRANSFORM.
+
+BREAK-POINT.
+        CASE I_DATASOURCE.
+
+            WHEN '2LIS_11_VA0HDR'.
+             ME->va0hdr_transform(  C_T_DATA ).
+
+        ENDCASE.
+
+  endmethod.
+
+
+  method IF_EX_RSU5_SAPI_BADI~HIER_TRANSFORM.
+  endmethod.
+
+
+
+  METHOD VA0HDR_TRANSFORM.
+
+
+      DATA LT_T_DATA TYPE STANDARD TABLE OF MC11VA0HDR.
+
+      FIELD-SYMBOLS <FS_DATA> TYPE MC11VA0HDR.
+
+      LT_T_DATA[] = IT_T_DATA[].
+
+      SORT LT_T_DATA BY KUNNR.
+      DELETE ADJACENT DUPLICATES FROM LT_T_DATA COMPARING KUNNR.
+
+         SELECT
+          LAND1 ,
+          NAME1
+          FROM KNA1
+          FOR ALL ENTRIES IN @LT_T_DATA
+          WHERE KUNNR = @LT_T_DATA-KUNNR
+          INTO TABLE @DATA(LT_KNA1).
+          IF SY-SUBRC NE 0.
+            CLEAR LT_T_DATA.
+          ENDIF.
+
+
+      LOOP AT IT_T_DATA ASSIGNING <FS_DATA>.
+
+
+        IF LINE_EXISTS( LT_T_DATA[ KUNNR  = <FS_DATA>-KUNNR  ] ).
+
+         DATA(LS_T_DATA) = LT_T_DATA[ KUNNR  = <FS_DATA>-KUNNR  ].
+
+         <FS_DATA>-LAND1 = LS_T_DATA-LAND1.
+         <FS_DATA>-NAME1 = LS_T_DATA-NAME1.
+
+        ENDIF.
+
+      ENDLOOP.
+
+
+  ENDMETHOD.
+
+ENDCLASS.
