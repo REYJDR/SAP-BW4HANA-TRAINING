@@ -1,0 +1,184 @@
+ON BW GO TO TRANSACTION LBWE 
+
+1. RSA5 - Activation (on source sap s4h)
+2. RSA6 - Check, Save and Generate
+3. LBWE (LO Cockpit)
+    1. Maintain extract structure
+    2. Maintain Datasource
+    3. Activate the delta mechanism
+    4. Delete setup table (LBWG)
+    5. Dummy entry in ODQ
+        PGM: RODPS_REPL_TEST (from se38) CREATE DUMMY SUBSCRIPTION 
+
+6. Fill setup table 
+    first check :
+    *CHECK IN rootattr table if datasource is available for ODP.
+    *Subscribe the Queue on ODQMON
+
+7. Check data (RSA3)
+
+4. Release the DS for ODP.
+    1. SAP Std Datasources - BS ANLY DS RELEASE ODP
+      a. ROOSATTR; Flag should be 'X'.
+    2. Std datasources only for S4 will automatically be exposed.
+        For ECC/ECC on HANA, you'll have to expose even the Std datasources.
+    3. Custom Datasources - RODPS_OS_EXPOSE
+
+5. Enhance the structure (MCVBAK) 
+    1. Extract Structure - The list of fields which gets transferred to BW.
+    2. Communication Structure - For LO Cockpit, list of fields in the parent structure.
+
+    To enhace a structure : 
+        - go in eclipse and open ABAP development object serach( ctrl+shift+a ).
+        - show it in abap repository, click right over structure name and select NEW APPEND STRUCTURE. 
+        - Set a name and next.
+        - a dev editor will open, add the fields and data type, save an activate. 
+
+6. Add the newly added field from CommStruc to ExtractStruc.
+
+
+7. Write the logic to populate the value for the new field via BADI (RSU5_SAPI_BADI).
+
+   *  inefficiant way to implement the enchament: 
+
+   - go to se18 or se19 TO CREATE CLASSIC BADI.
+   - provide Badi Name into Clasic BAdI name : RSU5_SAPI_BADI
+   - Provide the Z name for the new badi implementation, then provide short text save an activate. Copy the Class name.
+   - go to eclipse , ctrl+shift+A and serach for Class name given by privous step. 
+   - edit on DATA_TRANSFORM method. 
+
+RSU5_SAPI_BADI
+
+
+8. Test the logic (RSA3)
+
+
+
+
+
+
+
+NOTES: 
+
+LO COCKPIT (logistic datasource tables) has: 
+    * SETUP TABLE  -> ONLY FOR FULL LOADS OR INITIALIZATION , NOT FOR DELTA. (the name of setup tables looks like : <NAME module eg.>*SETUP ) (ARE COMPRESED DATA)
+    * Operational Delta Queues (ODQMON) : DELTA
+
+ctrl+shift+a > open ABAP development object in eclipse. Usuable for navigate on structures a check object information like structures names, data types etc. 
+
+* For filling SETUP TABLES for different modules go to t-code ( 0li7bw , is diferent depending on module you are working with, 0l17bw is for *_11_* datasources ) (ENSURE IN LBWE THE SCTRUCTURE FOR TARGET DATASOURCE IS ACTIVE)
+
+T-Code         Purpose
+
+OLI1BW       INVCO Stat. Setup: Material Movemts
+
+OLI2BW       INVCO Stat. Setup: Stor. Loc. Stocks
+
+OLI3BW       Reorg.PURCHIS BW Extract Structures
+
+OLI4BW       Reorg. PPIS Extract Structures
+
+OLI4KBW     Initialize Kanban Data
+
+OLI6BW        Recompilation Appl. 06 (Inv. Ver.)
+
+OLI7BW        Reorg. of VIS Extr. Struct.: Order
+
+OLI8BW        Reorg. VIS Extr. Str.: Delivery
+
+OLI9BW        Reorg. VIS Extr. Str.: Invoices
+
+OLIABW       Setup: BW agency business
+
+OLIB             PURCHIS: StatUpdate Header Doc Level
+
+OLID             SIS: Stat. Setup – Sales Activities
+
+OLIE              Statistical Setup – TIS: Shipments
+
+OLIFBW        Reorg. Rep. Manuf. Extr. Structs
+
+OLIGBW       Reconstruct GT: External TC
+
+OLIH             MRP Data Procurement for BW
+
+OLIIBW         Reorg. of PM Info System for BW
+
+OLIKBW        Setup GTM: Position Management
+
+OLILBW        Setup GTM: Position Mngmt w. Network
+
+OLIM             Periodic stock qty – Plant
+
+OLIQBW       QM Infosystem Reorganization for BW
+
+OLISBW       Reorg. of CS Info System for BW
+
+OLIX             Stat. Setup: Copy/Delete Versions
+
+OLIZBW       INVCO Setup: Invoice Verification
+
+Datasource                          Tcode           Program
+
+2LIS_02*                              OLI3BW       RMCENEUA
+
+2LIS_03_BX                         MCNB          RMCBINIT_BW
+
+2LIS_03_BF                         OLI1BW       RMCBNEUA
+
+2LIS_03_UM                        OLIZBW       RMCBNERP
+
+2LIS_04* orders                   OLI4BW       RMCFNEUA
+
+2LIS_04* manufacturing      OLIFBW       RMCFNEUD
+
+2LIS_05*                              OLIQBW      RMCQNEBW
+
+2LIS_08*                              VTBW          VTRBWVTBWNEW
+
+2LIS_08* (COSTS)              VIFBW        VTRBWVIFBW
+
+2LIS_11_V_ITM                   OLI7BW     RMCVNEUA
+
+2LIS_11_VAITM                   OLI7BW     RMCVNEUA
+
+2LIS_11_VAHDR                  OLI7BW     RMCVNEUA
+
+2LIS_12_VCHDR                 OLI8BW     RMCVNEUL
+
+2LIS_12_VCITM                   OLI8BW     RMCVNEUL
+
+2LIS_12_VCSCL                  OLI8BW     RMCVNEUL
+
+2LIS_13_VDHDR                 OLI9BW     RMCVNEUF
+
+2LIS_13_VDITM                   OLI9BW     RMCVNEUF
+
+2LIS_17*                              OLIIBW      RMCINEBW
+
+2LIS_18*                              OLISBW     RMCSNEBW
+
+2LIS_45*                              OLIABW     RMCENEUB
+
+note: 
+
+    in case you want modify any structure with a Queue already set
+
+
+    you MUST empty your delta queue and outbound queue!
+
+    Use SMQ1 to monitor entries in both DeltaQ (BW) and outboundQ (MC).
+
+    First run a collective update job in LBWE / schedule job; maintain print parameters (even dummies with LOCL) and schedule your job immediate.
+
+    Outbound entries will be moved to your Delta Q in SMQ1
+
+    To empty the delta queue: request twice a delta load from BW: one for the delta and one for the repeat of the last delta.
+
+    Verify that again in SMQ1.
+
+    Now you MUST ensure as well that no user nor background job will update some document relevant to your DataSource otherwise you'll have again entries in the outbound queue and have to repeat the above again!!
+
+    hope this helps...
+
+    Olivier.
